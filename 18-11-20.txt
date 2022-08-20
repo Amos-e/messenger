@@ -1,0 +1,6 @@
+Regarding active members
+    -When a user connects to a socket, an event is sent to the appropriate group and participants are made known of a new connection.
+    -The participants "echo" back "showing too, their presence in the group".
+    -Status with boolean type True signals a live connection while that with false signals a dead connection/disconnection
+    -When a user disconnects, an event is sent to the group which is handled by 'chat_signal', being false it is forwarded to 'chat_echo' that makes it available to all clients
+        --This is to make sure all clients are made aware of a disconnecting user since a dead connection can't echo back.

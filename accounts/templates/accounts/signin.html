@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles/auth.css' %}">
+    <title>Signin</title>
+</head>
+<body>
+    <div class="wrapper">
+        <form action="{% url 'accounts:signin' %}" method="POST" id="signin">
+            <header>
+                <h3>Sign In</h3>
+                <p>Login to your account</p>
+            </header>
+            <div class="form-area">
+                {% csrf_token %}
+                {{form}}
+                <input type="submit" value="Login">
+            </div>
+        </form>
+        <div class="new-account">
+            <span>Need an account?</span>
+            <a href="{% url 'accounts:signup' %}">Register</a>
+        </div>
+    </div>      
+</body>
+</html>

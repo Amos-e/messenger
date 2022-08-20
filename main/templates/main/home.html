@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block resources %}
+{{ private_room.id|json_script:"js_room" }}
+{% endblock %}
+{% block content %}
+<main id="main" class="hidden">
+    <div id="main-left">
+        <div class="header">
+            <div class="left">
+                <h3>{{user.username}}</h3>
+                <div role="online" class="current-offline">
+
+                </div>
+            </div>
+            <div class="right">
+                <div class="message-search">
+                    <input type="text" placeholder="Search message">
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="message-section">
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

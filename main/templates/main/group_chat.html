@@ -1,0 +1,374 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block resources %}
+{{ user.username|json_script:"js_user" }}
+{{ group_room.id|json_script:"js_room" }}
+<script defer src="{% static 'scripts/group_chat.js' %}" type="module"></script>
+{% endblock %}
+{% block content %}
+<main id="main" class="nav2-sm-grid">
+    <div id="main-left">
+        <div class="header">
+            <div class="left">
+                <h5>{{group_room.name}}</h5>
+                <div class="current-online">
+                    <p>
+                        <span> {{participants|length}} member{{participants|pluralize}}, </span>
+                        <span role="online"> </span> 
+                        <span>online</span>
+                    </p>
+                </div>
+            </div>
+            <div class="right">
+                <div class="member-add">
+                    {% if participants.0.user.has_dp %}
+                        <div class="avatar">
+                            <img src="{{participants.0.user.thumb.url}}" alt="thumb">
+                        </div>
+                    {% else %}
+                        <div class="avatar">
+                            {{participants.0.user.username|slice:":1"|upper}}
+                        </div>
+                    {% endif %}
+                    {% if participants.1 %}
+                        {% if participants.1.user.has_dp %}
+                            <div class="avatar hidden">
+                                <img src="{{participants.1.user.thumb.url}}" alt="thumb">
+                            </div>
+                        {% else %}
+                            <div class="avatar hidden">
+                                {{participants.1.user.username|slice:":1"|upper}}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if participants.2 %}
+                        {% if participants.2.user.has_dp %}
+                            <div class="avatar hidden">
+                                <img src="{{participants.2.user.thumb.url}}" alt="thumb">
+                            </div>
+                        {% else %}
+                            <div class="avatar hidden">
+                                {{participants.2.user.username|slice:":1"|upper}}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="avatar">
+                        <button role="toggle-add-members" class="plus-ico">
+                            <div class="icon">
+                                <i data-feather="plus"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <button role="toggle-main-right" group="{{group_room.id}}">
+                    <div class="icon">
+                        <i data-feather="sliders"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div class="body">
+            <div id="msg-section">
+                <div class="msg-container" style="display: none !important;">
+                    <div class="left">
+                        <div class="avatar"></div>
+                    </div>
+                    <div class="right">
+                        <p class="name">
+                            <span class="username"></span>
+                        </p>
+                        <p class="message">
+                            <span class="msg"></span>
+                        </p>
+                        <span class="time"></span>
+                    </div>
+                </div>
+                {% for message in messages %}
+                    {% ifchanged message.user.username %}
+                        {% if message.user.username == user.username %}
+                            <div class="msg-container msg-out">
+                        {% else %}
+                            <div class="msg-container">
+                        {% endif %}
+                    {% else %}
+                        {% if message.user.username == user.username %}
+                            <div class="msg-container msg-out prg-msg">
+                        {% else %}
+                            <div class="msg-container prg-msg">
+                        {% endif %}
+                    {% endifchanged %}
+                        <div class="left">
+                            <div class="avatar">
+                                {% if message.user.thumb != '' %}
+                                    <img src="{{message.user.thumb.url}}" alt="thumb">
+                                {% else %}
+                                    <span>{{message.user.username|slice:":1"|upper}}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="name">
+                                <span class="username">{{ message.user.username }}</span>
+                            </p>
+                            <p class="message">
+                                <span class="msg">{{ message.message }}</span>
+                            </p>
+                            <span class="time">{{ message.time|time:"H:i" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="input-section">
+                <textarea id="message-input" rows="1" type="text" placeholder="Type your message..."></textarea>
+            </div>
+        </div>
+    </div>
+    <div id="main-right">
+        <header>
+            <button role="close-main-right" class="close">
+                <div class="icon">
+                    <i data-feather="chevron-left"></i>
+                </div>
+            </button>
+        </header>
+        <section id="group-info" class="js-block">
+            <main id="mt-body">
+                <section class="gp-info">
+                    {% if group_room.thumb != '' %}
+                        <div class="avatar">
+                            <img src="{{group_room.thumb.url}}" alt="thumb">
+                            {% if participant.is_admin %}
+                                <button class="expand-model" role="view-update-group" model="group-update-model">
+                                    <i data-feather="edit-3"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="avatar">
+                            {{group_room.name|slice:":1"|upper}}
+                            {% if participant.is_admin %}
+                                <button class="expand-model" role="view-update-group" model="group-update-model">
+                                    <i data-feather="edit-3"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <div class="bio">
+                        <h4>{{group_room.name}}</h4>
+                        <p>{{group_room.bio}}</p>
+                    </div>
+                </section>
+                <div class="toggler">
+                    <button class="active opac">People</button>
+                    <button class="opac">Media</button>
+                </div>
+                <section class="body active opac" for="group-participants">
+                    <div class="list-group">
+                        <div class="contact relative" style="display: none !important">
+                            <div class="avatar"></div>
+                            <div class="info">
+                                <h4></h4>
+                                <p class="status">seen a while ago</p>
+                            </div>
+                            <div class="relative flex items-center pt-4">
+                                <button role="toggle-actions">
+                                    <div class="icon">
+                                        <i data-feather="more-vertical"></i>
+                                    </div>
+                                </button>
+                                <div class="absolute z-10 {% if participant.is_admin %} top-0 {% else %} top-3 {% endif %} bg-cblue rounded w-24 right-5 hidden shadow-md divide-white divide-solid divide-y divide-x-0 px-1 actions-container">
+                                    <button class="expand-model flex text-white w-full py-2 text-md justify-between px-1" role="view-profile" user="{{participant_.user.username}}" model="profile-model">
+                                        <span class="mt-0.5">Profile</span>
+                                        <span class="w-5 h-5 text-white"><i data-feather="user"></i></span>
+                                    </button>
+                                    {% if participant.is_admin %}
+                                        <button role="block-participant" class="text-white flex w-full text-md justify-between py-2 px-1" user="{{participant_.user.username}}" group="{{group_room.id}}">
+                                            <span class="mt-0.5">Delete</span>
+                                            <span class="w-5 h-5 text-white"><i data-feather="trash"></i></span>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% for participant_ in participants %}
+                            <div class="contact relative">
+                                {% if participant_.user.thumb != '' %}
+                                    <div class="avatar">
+                                        <img src="{{participant_.user.thumb.url}}" alt="thumb">
+                                    </div>
+                                {% else %}
+                                    <div class="avatar">
+                                        {{participant_.user.username|slice:":1"|upper}}
+                                    </div>
+                                {% endif %}
+                                <div class="info">
+                                    <h4>{{participant_.user.username}}</h4>
+                                    <p class="status">{{participant_.user.last_login|timesince}}</p>
+                                </div>
+                                <div class="relative flex items-center pt-4">
+                                    <button role="toggle-actions">
+                                        <div class="icon">
+                                            <i data-feather="more-vertical"></i>
+                                        </div>
+                                    </button>
+                                    <div class="absolute z-10 {% if participant.is_admin %} top-0 {% else %} top-3 {% endif %} bg-cblue rounded w-24 right-5 hidden shadow-md divide-white divide-solid divide-y divide-x-0 px-1 actions-container">
+                                        <button class="expand-model flex text-white w-full py-2 text-md justify-between px-1" role="view-profile" user="{{participant_.user.username}}" model="profile-model">
+                                            <span class="mt-0.5">Profile</span>
+                                            <span class="w-5 h-5 text-white"><i data-feather="user"></i></span>
+                                        </button>
+                                        {% if participant.is_admin %}
+                                            <button role="block-participant" class="text-white flex w-full text-md justify-between py-2 px-1" user="{{participant_.user.username}}" group="{{group_room.id}}">
+                                                <span class="mt-0.5">Delete</span>
+                                                <span class="w-5 h-5 text-white"><i data-feather="trash"></i></span>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                <section class="body opac">
+                    <!-- MEDIA GOES HERE -->
+                </section>
+            </main>
+        </section>
+        <section id="add-members" class="js-none opac">
+            {% if participant.is_admin %}
+                <div class="toggler">
+                    <button class="active opac">Invite</button>
+                    <button class="opac">Pending</button>
+                </div>
+            {% endif %}
+            <form action="" method="POST" class="body opac active">
+                {% csrf_token %}
+                <input type="hidden" name="add-members" value="add-members">
+                <div class="list-group-1">
+                    <div class="list-item" style="display: none !important;">
+                        <div class="avatar">
+                        </div>
+                        <div class="info">
+                            <h5></h5>
+                            <p>last seen 2 days ago</p>
+                        </div>
+                        <div class="input-section">
+                            <input type="checkbox" class="leading-4" value="{{friend.user.username}}" name="new_participant">
+                        </div>
+                    </div>
+                    {% for friend in friends %}
+                        {% if friend.user.username not in participants_usernames %}
+                            <div class="list-item">
+                                {% if friend.user.has_dp %}
+                                    <div class="avatar">
+                                        <img src="{{friend.user.thumb.url}}" alt="thumb">
+                                    </div>
+                                {% else %}
+                                    <div class="avatar">{{friend.user.username|slice:":1"|upper}}</div>
+                                {% endif %}
+                                <div class="info">
+                                    <h5>{{friend.user.username}}</h5>
+                                    <p>last seen 2 days ago</p>
+                                </div>
+                                <div class="input-section">
+                                    <input type="checkbox" value="{{friend.user.username}}" name="new_participant" class="leading-1 w-4 h-4">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="submit-section">
+                    <button>
+                        <span>Invite</span>
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                    </button>
+                </div>
+            </form>
+            {% if participant.is_admin %}
+                <div class="pending-requests body opac">
+                    {% for request in group_requests %}
+                        <div class="list-item">
+                            {% if request.user.has_dp %}
+                                <div class="avatar">
+                                    <img src="{{request.user.thumb.url}}" alt="thumb">
+                                </div>
+                            {% else %}
+                                <div class="avatar">{{request.user.username}}</div>
+                            {% endif %}
+                            <div class="info">
+                                <h5>{{request.user.username}}</h5>
+                                <p>Last seen 2 days</p>
+                            </div>
+                            <div class="input-section">
+                                <button role="reject-group-request" user='{{request.user.username}}' group='{{request.group_room.id}}'>
+                                    <i data-feather="x"></i>
+                                </button>
+                                <button role="confirm-group-request" user="{{request.user.username}}" group="{{request.group_room.id}}">
+                                        <i data-feather="check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</main>
+{% endblock %}
+{% block group_update_model %}
+{% if participant.is_admin %}
+<div id="group-update-model" class="group-edit-model">
+    <div class="profile-container">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="update-group" value="update-group">
+            <div class="form-ctn">
+                <header>
+                    <div class="banner">
+                        <button type="button" role="close-modal" model="group-update-model">
+                            <div class="icon">
+                                <i data-feather="chevron-left"></i>
+                            </div>
+                        </button>
+                        <img src="{% static 'images/banner.svg' %}" alt="thumb">
+                    </div>
+                    <div class="info">
+                        <label class="file-field" for="image_upload_field">
+                            <div class="icon">
+                                <i data-feather="image"></i>
+                            </div>
+                            <label for="image_upload_field" role="img-upload" class="svg-plus">
+                                <i data-feather="plus"></i>
+                            </label>
+                            {{group_update_form.thumb}}
+                        </label>
+                    </div>
+                </header>
+                <main>
+                    {{group_update_form.name}}
+                    {{group_update_form.bio}}
+                </main>
+            </div>
+            <div class="make-private">
+                <div class="icon-ctn">
+                    <div class="icon">
+                        <i data-feather="lock"></i>
+                    </div>
+                </div>
+                <label>Make private <br><span>Can only be viewed by invites</span></label>
+                {{group_update_form.room_type}}
+            </div>
+            <div class="submit-ctn">
+                <button>
+                    <span>Update</span>
+                    <div class="icon">
+                        <i data-feather="chevron-right"></i>
+                    </div>
+                </button>
+            </div>        
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

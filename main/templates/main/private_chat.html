@@ -1,0 +1,66 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block resources %}
+{{ user.username|json_script:"js_user" }}
+{{ private_room.id|json_script:"js_room" }}
+<script defer src="{% static 'scripts/private_chat.js' %}"></script>
+{% endblock %}
+{% block content %}
+<main id="main">
+    <div id="main-left">
+        <div class="header">
+            <div class="left">
+                {% if private_room.initiator == user %}
+                    <h5>{{private_room.receiver}}</h5>
+                {% else %}
+                    <h5>{{private_room.initiator}}</h5>
+                {% endif %}
+                <p role="online" class="current-offline">
+                    offline
+                </p>
+            </div>
+            <div class="right">
+                <button role="toggle-main-right">
+                    <div class="icon">
+                        <i data-feather="sliders"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div class="body">
+            <div id="msg-section">
+                {% for message in messages %}
+                    {% ifchanged message.user.username %}
+                        <div class="msg-container">
+                    {% else %}
+                        <div class="msg-container prg-msg">
+                    {% endifchanged %}
+                        <div class="left">
+                            <div class="avatar">{{ message.user.username|slice:":1"|upper }}</div>
+                        </div>
+                        <div class="right">
+                            <p class="name">
+                                <span class="username">{{ message.user.username }}</span>
+                                <span>{{ message.time.date|date:"SHORT_DATE_FORMAT" }}</span>
+                            </p>
+                            <p class="message">{{ message.message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="input-section">
+                <textarea id="message-input" type="text" placeholder="Type your message..."></textarea>
+            </div>
+        </div>
+    </div>
+    <div id="main-right">
+        <header>
+            <button role="close-main-right" class="close">
+                <div class="icon">
+                    <i data-feather="chevron-left"></i>
+                </div>
+            </button>
+        </header>
+    </div>
+</main>
+{% endblock %}
