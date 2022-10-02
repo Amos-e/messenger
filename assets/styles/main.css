@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.0.15 | MIT License | https://tailwindcss.com
+! tailwindcss v3.0.24 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -426,8 +426,8 @@ Ensure the default browser behavior of the `hidden` attribute.
 * {
   padding: 0;
   margin: 0;
-  font-family: Roboto, 'Segoe UI', sans-serif;
   box-sizing: border-box;
+  font-family: Inter;
 }
 
 ::-webkit-scrollbar {
@@ -1875,7 +1875,7 @@ button {
 #main-left #msg-section .msg-out {
   flex-direction: row-reverse;
   margin-left: auto;
-  color: #ff;
+  color: #fff;
 }
 
 #main-left .msg-out .name {
@@ -2161,6 +2161,7 @@ button {
 
 #main-right #add-members {
   height: 90vh;
+  overflow-y: scroll;
 }
 
 #main-right #add-members form {
