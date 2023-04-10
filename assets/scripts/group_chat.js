@@ -5,7 +5,7 @@ $('#main').style.display = 'block';
 $('#navs-container').style.display = 'none';
 
 const roomID = $('#js_room').innerText;
-const chatSocket = new WebSocket('ws://'+window.location.host+'/ws/channels/group/'+roomID+'/');
+const chatSocket = new WebSocket('ws://'+window.location.host+':8001/ws/channels/group/'+roomID+'/');
 const js_user = JSON.parse($('#js_user').textContent);
 
 const msgCtn = $('#msg-section');
