@@ -85,11 +85,7 @@ form input {
 }
 
 form input::placeholder {
-    color: #a0b3ce;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: -10em;
+    color: #556d91;
 }
 
 form label {

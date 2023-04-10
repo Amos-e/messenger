@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-c2#c=l_!2k3)no9_h04ai4%rxse6!u&4*2qg=br4fh40weswva
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'messenger.onrender.com']
 
 
 # Application definition
@@ -143,7 +143,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)]
+            'hosts': [('redis://red-cgpumal269v5rj8rt15g', 6379)]
         }
     }
 }

@@ -69,7 +69,7 @@ chatSocket.onmessage = function(event) {
             }
         }
 
-        data.thumb ? $(message, '.avatar').innerHTML = `<img src=${data.thumb}> alt=thumb` : $(message, '.avatar').innerText = data.user.slice(0,1).toUpperCase(); 
+        data.thumb ? $(message, '.avatar').innerHTML = `<img src=${data.thumb} alt=thumb>` : $(message, '.avatar').innerText = data.user.slice(0,1).toUpperCase(); 
         $(message, '.username').innerText = data.user;
         $(message, '.msg').innerText = data.message;
         $(message, '.time').innerText = data.time.slice(0,data.time.length-3);
